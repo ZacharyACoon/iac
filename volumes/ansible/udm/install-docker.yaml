@@ -1,0 +1,55 @@
+---
+- name: Install Docker to UDM
+  hosts: udm
+  remote_user: root
+
+  tasks:
+  - name: Install Docker Dependencies
+    apt:
+      pkg:
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+
+  - name: Add Docker Apt Repository Key
+    ansible.builtin.apt_key:
+      state: present
+      url: https://download.docker.com/linux/debian/gpg
+
+  - name: Add Docker Apt Repository
+    ansible.builtin.apt_repository:
+      state: present
+      filename: docker
+      repo: deb [arch=arm64] https://download.docker.com/linux/debian stretch stable
+
+  - name: Create Persistent Docker Directory
+    ansible.builtin.file:
+      state: directory
+      path: /persistent/docker/data
+      mode: '0700'
+
+  - name: Create /etc/docker
+    ansible.builtin.file:
+      path: "/etc/docker"
+      state: directory
+
+  - name: Create /etc/docker/daemon.json
+    copy:
+      dest: "/etc/docker/daemon.json"
+      content: |
+        {
+          "data-root": "/persistent/docker/data",
+          "exec-opts": ["native.cgroupdriver=systemd"],
+          "ipv6": true,
+          "fixed-cidr-v6": "2604:4080:1326:8bff::/64"
+        }
+
+  - name: Install Docker
+    apt:
+      update_cache: yes
+      state: latest
+      pkg:
+      - docker-ce 
+      - docker-ce-cli
+      - containerd.io

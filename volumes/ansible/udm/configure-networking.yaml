@@ -1,0 +1,21 @@
+---
+- name: Configure Linux Systemd Networking to allow for MACVLAN Containers (to avoid port collisions with host)
+  hosts: udm
+  remote_user: root
+
+  tasks:
+  - name: Create systemd-network conf files.
+    copy:
+      src: "./network-files/{{ item }}"
+      dest: "/etc/systemd/network/{{ item }}"
+      with_items:
+      - 10_br0-macvlan.netdev
+      - 11_br0-macvlan.network
+      - 12_br0-macvlan.network
+      register: network-files
+
+  - name: Restart network
+    service:
+      name: systemd-networkd
+      state: restarted
+      when: network-files.changed

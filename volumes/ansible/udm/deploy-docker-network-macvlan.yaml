@@ -1,0 +1,26 @@
+---
+- name: Deploy Docker MACVLAN Network for UDM Services
+  hosts: udm
+  remote_user: root
+#  ssh_args: "-nNT -L /tmp/{{ ansible_ssh_host }}.docker.sock:/var/run/docker.sock"
+
+  tasks:
+  - name: Get Docker Info
+    delegate_to: localhost
+    docker_host_info: 
+      docker_host: "ssh://{{ hostvars[inventory_hostname].ansible_host }}"
+
+  - name: Deploy Docker MACVLAN Network
+    delegate_to: localhost
+    docker_network:
+      docker_host: "ssh://{{ hostvars[inventory_hostname].ansible_host }}"
+      # leave unlisted containers alone
+      appends: no
+      name: "udm-service"
+      driver: macvlan
+      driver_options:
+        parent: "br0"
+      ipam_config:
+      - subnet: "192.168.255.0/24"
+        gateway: "192.168.255.1"
+#        iprange: "192.168.255.0/24"

@@ -1,0 +1,54 @@
+---
+- name: Deploy Pihole to UDM
+  hosts: udm
+  remote_user: root
+
+  tasks:
+
+  - name: Deploy Pihole1
+    delegate_to: localhost
+    docker_container:
+      name: pihole1
+      docker_host: "ssh://{{ hostvars[inventory_hostname].ansible_host }}"
+      image: pihole/pihole
+#      pull: yes
+      state: started
+      restart_policy: always
+      env_file: .env
+      volumes:
+      - pihole1-etc:/etc/pihole
+      networks:
+      - name: "udm-service"
+        ipv4_address: 192.168.255.21
+      ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/tcp"
+      - "443:443/tcp"
+      capabilities:
+      - NET_ADMIN
+
+  - name: Deploy Pihole2
+    delegate_to: localhost
+    docker_container:
+      name: pihole2
+      docker_host: "ssh://{{ hostvars[inventory_hostname].ansible_host }}"
+      image: pihole/pihole
+      pull: yes
+      state: started
+      restart_policy: always
+      env_file: .env
+      volumes:
+      - pihole2-etc:/etc/pihole
+      networks:
+      - name: "udm-service"
+        ipv4_address: 192.168.255.22
+      ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/tcp"
+      - "443:443/tcp"
+      capabilities:
+      - NET_ADMIN
