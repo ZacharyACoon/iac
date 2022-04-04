@@ -6,16 +6,13 @@
   tasks:
   - name: Create systemd-network conf files.
     copy:
-      src: "./network-files/{{ item }}"
-      dest: "/etc/systemd/network/{{ item }}"
-      with_items:
-      - 10_br0-macvlan.netdev
-      - 11_br0-macvlan.network
-      - 12_br0-macvlan.network
-      register: network-files
+      src: "{{ item }}"
+      dest: "/etc/systemd/network/{{ item | basename }}"
+    with_fileglob: "network-files/*"
+    register: network_files
 
   - name: Restart network
     service:
       name: systemd-networkd
       state: restarted
-      when: network-files.changed
+    when: network_files.changed
