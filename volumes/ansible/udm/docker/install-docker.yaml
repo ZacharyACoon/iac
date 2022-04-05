@@ -27,7 +27,7 @@
     ansible.builtin.file:
       state: directory
       path: /persistent/docker/data
-      mode: '0700'
+      mode: '0711'
 
   - name: Create /etc/docker
     ansible.builtin.file:

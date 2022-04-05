@@ -1,0 +1,13 @@
+---
+
+- name: Prepare Networking on UDM
+  import_playbook: networking/configure-systemd-networking.yaml
+
+- name: Install Docker on UDM
+  import_playbook: docker/install-docker.yaml
+
+- name: Prepare Docker Network on UDM
+  import_playbook: docker/deploy-docker-network-macvlan.yaml
+
+- name: Deploy Pihole Docker Container on UDM
+  import_playbook: docker/deploy-docker-container-pihole.yaml
