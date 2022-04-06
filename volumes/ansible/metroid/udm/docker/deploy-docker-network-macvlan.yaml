@@ -16,11 +16,10 @@
       docker_host: "ssh://{{ hostvars[inventory_hostname].ansible_host }}"
       # leave unlisted containers alone
       appends: no
-      name: "udm-service"
+      name: "services"
       driver: macvlan
       driver_options:
-        parent: "br0"
+        parent: "br103"
       ipam_config:
-      - subnet: "192.168.255.0/24"
-        gateway: "192.168.255.1"
-#        iprange: "192.168.255.0/24"
+      - subnet: "192.168.3.0/28"
+        gateway: "192.168.3.2"

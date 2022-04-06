@@ -4,22 +4,28 @@
   remote_user: root
 
   tasks:
+  - name: Pull Latest Docker Image
+    delegate_to: localhost
+    docker_image:
+      docker_host: "ssh://{{ hostvars[inventory_hostname].ansible_host }}"
+      name: "pihole/pihole"
+    ignore_errors: yes
 
   - name: Deploy Pihole1
     delegate_to: localhost
     docker_container:
-      name: pihole1
       docker_host: "ssh://{{ hostvars[inventory_hostname].ansible_host }}"
+      name: pihole1
       image: pihole/pihole
-#      pull: yes
       state: started
       restart_policy: always
       env_file: .env
+      hostname: pihole1
       volumes:
       - pihole1-etc:/etc/pihole
       networks:
-      - name: "udm-service"
-        ipv4_address: 192.168.255.21
+      - name: "services"
+        ipv4_address: 192.168.3.11
       ports:
       - "53:53/tcp"
       - "53:53/udp"
@@ -32,18 +38,18 @@
   - name: Deploy Pihole2
     delegate_to: localhost
     docker_container:
-      name: pihole2
       docker_host: "ssh://{{ hostvars[inventory_hostname].ansible_host }}"
+      name: pihole2
       image: pihole/pihole
-      pull: yes
       state: started
       restart_policy: always
       env_file: .env
+      hostname: pihole2
       volumes:
       - pihole2-etc:/etc/pihole
       networks:
-      - name: "udm-service"
-        ipv4_address: 192.168.255.22
+      - name: "services"
+        ipv4_address: 192.168.3.12
       ports:
       - "53:53/tcp"
       - "53:53/udp"

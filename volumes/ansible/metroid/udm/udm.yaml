@@ -6,6 +6,9 @@
 - name: Install Docker on UDM
   import_playbook: docker/install-docker.yaml
 
+- name: Configure Docker on UDM
+  import_playbook: docker/configure-docker.yaml
+
 - name: Prepare Docker Network on UDM
   import_playbook: docker/deploy-docker-network-macvlan.yaml
 

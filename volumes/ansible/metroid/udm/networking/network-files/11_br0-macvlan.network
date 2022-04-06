@@ -1,5 +1,0 @@
-[Match]
-Name=br0
-
-[Network]
-MACVLAN=br0-macvlan
